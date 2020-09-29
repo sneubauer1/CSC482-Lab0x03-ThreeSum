@@ -9,35 +9,15 @@ public class Main {
 
     public static void main(String[] args) {
 
-    int N = 100;
+    int N = 5;
     int min = -(2*N);
     int max = (2*N);
+    int maxTime = 100;
+    int maxTrials = 10;
+    int N_min = 4;
+    int N_max = Integer.MAX_VALUE;
+    runTimeTestsBrute(maxTime, maxTrials, N_min, N_max);
 
-    int[] list;
-
-    list = generateUnsortedList(N,min,max);
-
-    for (int i = 0; i < N; i++)
-    {
-        for( int j = 0; j < i; j++){
-            if (list[i]== list[j]){
-                System.out.println("\nERROR DUPLICATE FOUND\n");
-            }
-        }
-        System.out.print(list[i]+" ");
-    }
-
-    int count = bruteForce(list);
-
-
-    System.out.println();
-    System.out.println("Sets of numbers that add up to zero: " + count);
-    System.out.println();
-    count = faster(list);
-    System.out.println("2nd Run Sets of numbers that add up to zero: " + count);
-    System.out.println();
-    count = fastest(list);
-    System.out.println("3rd Run Sets of numbers that add up to zero: " + count);
     }
     /** Get CPU time in nanoseconds since the program(thread) started. */
     /**
@@ -49,49 +29,157 @@ public class Main {
                 bean.getCurrentThreadCpuTime() : 0L;
     }
 
+    public static void runTimeTestsBrute(int maxTime, int maxTrials, int N_min, int N_max)
+    {
+            int N = 4;
+
+            int min = -(2*N);
+            int max = 2*N;
+            long timeStampBefore;
+            long timeStampAfter;
+            long totalTime = 0;
+            long timeMeasured = 0;
+            int trialCount = 0;
+            long bruteAverageTimeMeasured = 0;
+            long fasterAverageTimeMeasured = 0;
+            long fastestAverageTimeMeasured = 0;
+            double bruteDoubleRatio = 0;
+            double fasterDoubleRatio = 0;
+            double fastestDoubleRatio = 0;
+            double bruteExpectedDoubleRatio = 0;
+            double fasterExpectedDoubleRatio = 0;
+            double fastestExpectedDoubleRatio = 0;
+            long brutePreviousTimeMeasured = 1;
+            long fasterPreviousTimeMeasured = 1;
+            long fastestPreviousTimeMeasured = 1;
+
+            /**Print Column Headings**/
+            System.out.printf("\n%13s %20s %20s %22s %20s %20s %22s %20s %20s %22s\n", "N","Brute Force Time","Doubling Ratio","Exp. Doubling Ratio", "Faster 3sum Time", "Doubling Ratio", "Exp. Doubling Ratio","Fastest 3sum Time","Doubling Ratio","Exp. Doubling Ratio");
+            System.out.printf("%210s\n", "--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+            for( N = N_min; N <= N_max; N = N * 2)
+            {
+                int[] list = generateUnsortedList(N,-(N/2), (N/2));
+                totalTime = 0;
+                trialCount = 0;
+                // Time trial for brute force method
+                while ( totalTime < maxTime && trialCount < maxTrials )
+                {
+                    timeStampBefore = getCpuTime();
+                    bruteForce(list);
+                    timeStampAfter = getCpuTime();
+                    timeMeasured = timeStampAfter - timeStampBefore;
+                    totalTime = totalTime + timeMeasured;
+                    trialCount++;
+                }
+                bruteAverageTimeMeasured = totalTime / trialCount;
+                bruteDoubleRatio = (double) bruteAverageTimeMeasured / brutePreviousTimeMeasured;
+                brutePreviousTimeMeasured = bruteAverageTimeMeasured;
+                if ( ((N / 2) * (N / 2) * (N / 2)) != 0) {
+                    bruteExpectedDoubleRatio = (N * N * N) / ((N / 2) * (N / 2) * (N / 2));
+                } else{
+                    bruteExpectedDoubleRatio = 8.0;
+                }
+
+
+                totalTime = 0;
+                trialCount = 0;
+                // Time trial for faster method
+                while ( totalTime < maxTime && trialCount < maxTrials )
+                {
+                    timeStampBefore = getCpuTime();
+                    faster(list);
+                    timeStampAfter = getCpuTime();
+                    timeMeasured = timeStampAfter - timeStampBefore;
+                    totalTime = totalTime + timeMeasured;
+                    trialCount++;
+                }
+                fasterAverageTimeMeasured = totalTime / trialCount;
+                fasterDoubleRatio = (double) fasterAverageTimeMeasured / fasterPreviousTimeMeasured;
+                fasterPreviousTimeMeasured = fasterAverageTimeMeasured;
+                fasterExpectedDoubleRatio = ((N*N)*log2(N))/(((N / 2) * (N / 2))*log2(N-1));
+
+
+                totalTime = 0;
+                trialCount = 0;
+                // Time trial for fastest method
+                while ( totalTime < maxTime && trialCount < maxTrials )
+                {
+                    timeStampBefore = getCpuTime();
+                    faster(list);
+                    timeStampAfter = getCpuTime();
+                    timeMeasured = timeStampAfter - timeStampBefore;
+                    totalTime = totalTime + timeMeasured;
+                    trialCount++;
+                }
+                fastestAverageTimeMeasured = totalTime / trialCount;
+                fastestDoubleRatio = (double) fastestAverageTimeMeasured / fastestPreviousTimeMeasured;
+                fastestPreviousTimeMeasured = fastestAverageTimeMeasured;
+                fastestExpectedDoubleRatio = (N*N)/ ((N/2) * (N/2));
+
+
+
+                if ( N == N_min ) {
+                    String notApplicable = "na";
+                    System.out.printf("%13s %20s %20s %22s %20s %20s %22s %20s %20s %22s\n", N, bruteAverageTimeMeasured, notApplicable, notApplicable, fasterAverageTimeMeasured, notApplicable, notApplicable, fastestAverageTimeMeasured, notApplicable, notApplicable);
+                }
+                else{
+                    System.out.printf("%13s %20s %20.2f %22s %20s %20.2f %22s %20s %20.2f %22s\n", N, bruteAverageTimeMeasured, bruteDoubleRatio, bruteExpectedDoubleRatio, fasterAverageTimeMeasured, fasterDoubleRatio, fasterExpectedDoubleRatio, fastestAverageTimeMeasured, fastestDoubleRatio, fastestExpectedDoubleRatio);
+                }
+            }
+    }
+
+    public static int log2(int x){
+        return (int) (Math.log(x) / Math.log(2));
+    }
+
     public static int fastest(int[] list)
     {
         Arrays.sort(list);
         int N = list.length;
         int count = 0;
-        for( int i = 0; i < N; i++) {
-            int low = i + 1;
-            int high = N - 1;
+        for( int i = 0; i < N - 2; i++) {
+            int lowerBound = i + 1;
+            int upperBound = N - 1;
 
-            for (int j =  low; low < high;  )
+            for (int j =  lowerBound; lowerBound < upperBound;  )
             {
-                if(list[i] + list[low] + list[high] == 0)
+                if(list[i] + list[lowerBound] + list[upperBound] == 0)
                 {
                     count++;
-                    low++;
-                    high--;
-                }else if(list[i] + list[low] + list[high] < 0){
-                    low++;
+                    lowerBound++;
+                    upperBound--;
+                }else if(list[i] + list[lowerBound] + list[upperBound] < 0){
+                    lowerBound++;
                 }else{
-                    high--;
+                    upperBound--;
                 }
             }
         }
         return count;
     }
-    public static int rank(int a, int[] list)
+    public static int binarySearch(int a, int[] list)
     {
-        int low = 0;
-        int high = list.length - 1;
+        int lowerBound = 0;
+        int upperBound = list.length - 1;
 
-        while (low <= high)
+        while (lowerBound <= upperBound)
         {
-            int mid = low + (high - low) / 2;
-            if (a < list[mid]){
-                high = mid - 1;
+            int middle = lowerBound + (upperBound - lowerBound) / 2;
+            // If key value is lower than middle index, then we focus on the lower half of the list
+            if (a < list[middle]){
+                upperBound = middle - 1;
             }
-            else if ( a > list[mid]){
-                low = mid + 1;
+            // If key value is greater than middle index, then we focus on the upper half of the list
+            else if ( a > list[middle]){
+                lowerBound = middle + 1;
             }
+            // The key value is present at middle index, return middle index
             else {
-                return mid;
+                return middle;
             }
         }
+        // The key value was not present in the list
         return -1;
     }
 
@@ -103,7 +191,7 @@ public class Main {
 
         for (int i = 0; i < N; i++) {
             for (int j = i + 1; j < N; j++){
-                if(rank(-list[i]-list[j], list) > j){
+                if(binarySearch(-list[i]-list[j], list) > j){
                     count++;
                 }
             }
