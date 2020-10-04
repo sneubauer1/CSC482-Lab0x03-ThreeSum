@@ -159,9 +159,11 @@ public class Main {
                     count++;
                     lowerBound++;
                     upperBound--;
+                    // sum of 3 elements is less than 0 increment the lowerbound
                 }else if(list[i] + list[lowerBound] + list[upperBound] < 0){
                     lowerBound++;
                 }else{
+                    // sum of 3 elements is more than 0 decrement the lowerbound
                     upperBound--;
                 }
             }
