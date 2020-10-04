@@ -16,9 +16,9 @@ public class Main {
     int maxTrials = 1000;
     int N_min = 4;
     int N_max = Integer.MAX_VALUE;
-    //runTimeTestsBrute(maxTime, maxTrials, N_min, N_max);
+    runTimeTestsBrute(maxTime, maxTrials, N_min, N_max);
 
-    int[] list = generateUnsortedList(N,min,max);
+    /*int[] list = generateUnsortedList(N,min,max);
     System.out.println(Arrays.toString(list));
     int count = bruteForce(list);
     System.out.println("\nbrute is "+count+"\n");
@@ -26,7 +26,7 @@ public class Main {
     System.out.println("\nfaster is "+count+"\n");
     count = fastest(list);
     System.out.println("\nfastest is "+count+"\n");
-
+    */
     }
     /** Get CPU time in nanoseconds since the program(thread) started. */
     /**
