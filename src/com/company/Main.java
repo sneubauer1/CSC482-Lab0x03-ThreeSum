@@ -9,14 +9,23 @@ public class Main {
 
     public static void main(String[] args) {
 
-    int N = 5;
+    int N = 100;
     int min = -(2*N);
     int max = (2*N);
-    int maxTime = 100;
-    int maxTrials = 10;
+    int maxTime = 1000000000;
+    int maxTrials = 1000;
     int N_min = 4;
     int N_max = Integer.MAX_VALUE;
-    runTimeTestsBrute(maxTime, maxTrials, N_min, N_max);
+    //runTimeTestsBrute(maxTime, maxTrials, N_min, N_max);
+
+    int[] list = generateUnsortedList(N,min,max);
+    System.out.println(Arrays.toString(list));
+    int count = bruteForce(list);
+    System.out.println("\nbrute is "+count+"\n");
+    count = faster(list);
+    System.out.println("\nfaster is "+count+"\n");
+    count = fastest(list);
+    System.out.println("\nfastest is "+count+"\n");
 
     }
     /** Get CPU time in nanoseconds since the program(thread) started. */
@@ -134,18 +143,19 @@ public class Main {
     }
 
     public static int fastest(int[] list)
-    {
+    {   //pre-sort the list
         Arrays.sort(list);
         int N = list.length;
         int count = 0;
         for( int i = 0; i < N - 2; i++) {
             int lowerBound = i + 1;
             int upperBound = N - 1;
-
-            for (int j =  lowerBound; lowerBound < upperBound;  )
+            // while lowerbound is less than upperbound, the lowerbound will increment and the upperbound will decrement
+            // this shrinks the items we are searching for the list as we are searching for 3 sums
+            for ( ; lowerBound < upperBound;  )
             {
                 if(list[i] + list[lowerBound] + list[upperBound] == 0)
-                {
+                {   // count the 3 sums
                     count++;
                     lowerBound++;
                     upperBound--;
@@ -185,13 +195,16 @@ public class Main {
 
     public static int faster(int[] list)
     {
+        // pre-sort the list
         Arrays.sort(list);
         int N = list.length;
         int count = 0;
 
         for (int i = 0; i < N; i++) {
             for (int j = i + 1; j < N; j++){
+                // use binary search to determine if there is a 3 sum
                 if(binarySearch(-list[i]-list[j], list) > j){
+                   // count the 3 sums
                     count++;
                 }
             }
@@ -202,12 +215,12 @@ public class Main {
     {
         int N = list.length;
         int count = 0;
-
+        // iterate through 3 indices looking for 3 sums; explicitly search through every index
         for ( int i = 0; i < N; i++){
             for ( int j = i + 1; j < N; j++){
                 for ( int k = j + 1; k < N; k++){
                     if (list[i] + list[j] + list[k] == 0)
-                    {
+                    {   //count the 3 sums
                         count++;
                     }
                 }
@@ -222,10 +235,10 @@ public class Main {
         Random rand = new Random();
 
         for (int i = 0; i < N; i++)
-        {
+        {   // generate random list between max and min
             list[i] = rand.nextInt(max - min + 1 ) + min;
             for ( int j = 0; j < i; j++)
-            {
+            {   //remove duplicates
                 if (list[i] == list[j])
                 {
                     i--;
